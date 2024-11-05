@@ -1,9 +1,5 @@
-* {
-    font-family: 'Trebuchet MS', sans-serif;
-}
-
 body {
-    overflow: hidden;
+    font-family: 'Trebuchet MS', sans-serif;
 }
 
 .container {
@@ -88,4 +84,12 @@ a {
 .helloworld {
     color: black;
     opacity: 10%;
+}
+
+@media only screen and (max-device-width:480px) {
+    .container::before {
+        opacity: 50%;
+        margin-bottom: 10px;
+        content: "You are on mobile, and unfortunately dragging the points does not work on mobile just yet.";
+    }
 }
