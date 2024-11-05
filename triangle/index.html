@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Triangle</title>
     <link rel="stylesheet" href="../style.css">
+    <meta name="description" content="This is a simple svg generator where you can also see the angles, on this page you can create a triangle, but you can choose from; triangle, square, pentagon and hexagon">
 </head>
 <body>
     <div class="container">
@@ -19,15 +20,16 @@
             <div>
                 <a href="#"><u>Triangle</u></a> <a href="../square">Square</a> <a href="../pentagon/">Pentagon</a> <a href="../hexagon/">Hexagon</a>
             </div>
-            <a onclick="reset()">Reset</a>
+            <a href="#" onclick="reset()">Reset</a>
         </div>
 
         <p id="angle1" class="angle">0°</p>
         <p id="angle2" class="angle">0°</p>
         <p id="angle3" class="angle">0°</p>
 
-        <textarea id="pathDisplay" class="code" readonly></textarea>
+        <textarea type="text" id="pathDisplay" class="code" readonly></textarea>
         <button id="copyButton" onclick="copyText()" class="copy">Copy path</button>
+        <p class="helloworld">by Rogier Goossen</p>
     </div>
 </body>
 </html>
