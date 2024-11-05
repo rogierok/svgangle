@@ -130,6 +130,7 @@ function calculateAngles() {
     }
 }
 
+
 let selectedPoint = null;
 
 points.forEach(point => {
@@ -138,13 +139,20 @@ points.forEach(point => {
     });
 });
 
-document.addEventListener('mousemove', (e) => {
+const svgElement = document.querySelector('svg');
+
+svgElement.addEventListener('mousemove', (e) => {
     if (selectedPoint) {
-        selectedPoint.x = e.offsetX;
-        selectedPoint.y = e.offsetY;
-        selectedPoint.circle.setAttribute('cx', selectedPoint.x);
-        selectedPoint.circle.setAttribute('cy', selectedPoint.y);
-        updatePath();
+        const newX = e.offsetX;
+        const newY = e.offsetY;
+
+        if (newX >= 0 && newX <= 400 && newY >= 0 && newY <= 400) {
+            selectedPoint.x = newX;
+            selectedPoint.y = newY;
+            selectedPoint.circle.setAttribute('cx', selectedPoint.x);
+            selectedPoint.circle.setAttribute('cy', selectedPoint.y);
+            updatePath();
+        }
     }
 });
 
