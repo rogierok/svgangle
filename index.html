@@ -30,23 +30,32 @@
         <p id="angle2" class="angle">0°</p>
         <p id="angle3" class="angle">0°</p>
 
+        <p id="length1" class="length">0</p>
+        <p id="length2" class="length">0</p>
+        <p id="length3" class="length">0</p>
+
         <textarea type="text" id="pathDisplay" readonly></textarea>
         <button id="copyButton" onclick="copyText()">Copy path</button>
         <p class="helloworld">by Rogier Goossen</p>
     </div>
-</body>
-</html>
 
 <script>
 const pathElement = document.getElementById('path');
 const pathDisplay = document.getElementById('pathDisplay');
 const copyButton = document.getElementById('copyButton');
 const removeButton = document.getElementById('removeButton');
+const container = document.getElementById("container");
 
 const angleDisplays = [
     document.getElementById('angle1'),
     document.getElementById('angle2'),
     document.getElementById('angle3')
+];
+
+const lengthDisplays = [
+    document.getElementById('length1'),
+    document.getElementById('length2'),
+    document.getElementById('length3')
 ];
 
 const points = [
@@ -88,11 +97,13 @@ function addPoint(x, y) {
     document.querySelector("svg").appendChild(newPoint.circle);
     points.push(newPoint);
 
-    const angleContainer = document.getElementById("container");
     const angleDisplay = createAngleDisplay(x, y);
+    const lengthDisplay = createLengthDisplay(x, y);
 
-    angleContainer.appendChild(angleDisplay);
+    container.appendChild(angleDisplay);
+    container.appendChild(lengthDisplay);
     angleDisplays.push(angleDisplay);
+    lengthDisplays.push(lengthDisplay);
     pointCount++;
 
     updatePath();
@@ -104,19 +115,19 @@ function removeLastPoint() {
         lastPoint.circle.remove();
         
         angleDisplays.pop().remove();
+        lengthDisplays.pop().remove();
 
         updatePath();
     } else {
         removeButton.style.color = "red";
         removeButton.innerHTML = "No points to remove";
 
-    setTimeout(() => {
-        removeButton.style.color = "black";
-        removeButton.innerHTML = "Remove point";
-    }, "1000");
+        setTimeout(() => {
+            removeButton.style.color = "black";
+            removeButton.innerHTML = "Remove point";
+        }, "1000");
     }
 }
-
 
 function createPoint(x, y) {
     const newPoint = {
@@ -143,6 +154,16 @@ function createAngleDisplay(x, y) {
     angleDisplay.style.top = `${y - 20}px`;
 
     return angleDisplay;
+}
+
+function createLengthDisplay(x, y) {
+    const lengthDisplay = document.createElement("p");
+    lengthDisplay.className = "length";
+    lengthDisplay.textContent = "0";
+    lengthDisplay.style.left = `${x}px`;
+    lengthDisplay.style.top = `${y}px`;
+
+    return lengthDisplay;
 }
 
 function updateURL() {
@@ -180,6 +201,7 @@ function updatePath() {
     pathElement.setAttribute('d', d);
     pathDisplay.value = d.replace(/\s+/g, ' ').trim();
     calculateAngles();
+    calculateLengths();
     updateURL();
 }
 
@@ -203,7 +225,6 @@ function calculateAngles() {
         const angleRadians = Math.acos(dotProduct / (magnitudeA * magnitudeB));
         const angleDegrees = angleRadians * (180 / Math.PI);
         
-        //nan default is 180 for adding new points
         if (isNaN(angleDegrees)) {
             angleDisplays[i].textContent = "180°";
         } else {
@@ -213,6 +234,31 @@ function calculateAngles() {
         angleDisplays[i].style.left = `${P1.x + 10}px`;
         angleDisplays[i].style.top = `${P1.y - 20}px`;
     });
+}
+
+function calculateLengths() {
+    for (let i = 0; i < points.length; i++) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % points.length];
+
+        const length = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        const lengthDisplay = lengthDisplays[i];
+
+        if (!lengthDisplay) {
+            createLengthDisplay((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+        }
+        
+        lengthDisplays[i].textContent = length.toFixed(2);
+        
+        lengthDisplays[i].style.left = `${(p1.x + p2.x) / 2 + -25}px`;
+        lengthDisplays[i].style.top = `${(p1.y + p2.y) / 2 + -25}px`;
+
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+        lengthDisplays[i].style.transform = `rotate(${angle}deg)`;
+    }
 }
 
 let selectedPoint = null;
@@ -247,3 +293,5 @@ document.addEventListener('mouseup', () => {
 loadPathFromURL();
 updatePath();
 </script>
+</body>
+</html>
