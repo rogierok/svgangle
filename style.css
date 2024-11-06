@@ -87,9 +87,12 @@ a {
 }
 
 @media only screen and (max-device-width:480px) {
-    .container::before {
+    .container::after {
+        box-sizing: border-box;
         opacity: 50%;
-        margin-bottom: 10px;
+        background-color: red;
+        border-radius: 10px;
+        padding: 8px;
         content: "You are on mobile, and unfortunately dragging the points does not work on mobile just yet.";
     }
 }
