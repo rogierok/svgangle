@@ -35,7 +35,7 @@ svg {
     opacity: 100%;
 }
 
-.code {
+textarea {
     box-sizing: border-box;
     padding: 4px;
     margin-top: 10px;
@@ -65,7 +65,7 @@ button {
 
 }
 
-.copy:active {
+button:active {
     opacity: 75%;
 }
 
@@ -75,7 +75,7 @@ a {
     color: black;
 }
 
-.switch {
+.controller {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
