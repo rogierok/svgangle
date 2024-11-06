@@ -69,8 +69,13 @@ function reset() {
 let pointCount = 3;
 
 function addNewPoint() {
-    //change this later
-    addPoint(200, 200);
+    const firstPoint = points[0];
+    const lastPoint = points[points.length - 1];
+    
+    const midX = (firstPoint.x + lastPoint.x) / 2;
+    const midY = (firstPoint.y + lastPoint.y) / 2;
+    
+    addPoint(midX, midY);
 }
 
 function addPoint(x, y) {
@@ -166,10 +171,21 @@ function calculateAngles() {
         const magnitudeA = Math.sqrt(vectorA.x ** 2 + vectorA.y ** 2);
         const magnitudeB = Math.sqrt(vectorB.x ** 2 + vectorB.y ** 2);
         
+        if (magnitudeA === 0 || magnitudeB === 0) {
+            angleDisplays[i].textContent = "180°";
+            return;
+        }
+        
         const angleRadians = Math.acos(dotProduct / (magnitudeA * magnitudeB));
         const angleDegrees = angleRadians * (180 / Math.PI);
         
-        angleDisplays[i].textContent = angleDegrees.toFixed(2) + "°";
+        //nan default is 180 for adding new points
+        if (isNaN(angleDegrees)) {
+            angleDisplays[i].textContent = "180°";
+        } else {
+            angleDisplays[i].textContent = angleDegrees.toFixed(2) + "°";
+        }
+        
         angleDisplays[i].style.left = `${P1.x + 10}px`;
         angleDisplays[i].style.top = `${P1.y - 20}px`;
     });
