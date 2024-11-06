@@ -19,7 +19,10 @@
             <circle id="p3" cx="100" cy="300" r="4" fill="grey" cursor="pointer" />
         </svg>
         <div class="controller">
-            <a href="#" onclick="addNewPoint()">Add point</a>
+            <div>
+                <a href="#" onclick="addNewPoint()">Add point</a>
+                <a href="#" onclick="removeLastPoint()" id="removeButton">Remove point</a>
+            </div>
             <a href="#" onclick="reset()">Reset</a>
         </div>
 
@@ -38,6 +41,7 @@
 const pathElement = document.getElementById('path');
 const pathDisplay = document.getElementById('pathDisplay');
 const copyButton = document.getElementById('copyButton');
+const removeButton = document.getElementById('removeButton');
 
 const angleDisplays = [
     document.getElementById('angle1'),
@@ -93,6 +97,26 @@ function addPoint(x, y) {
 
     updatePath();
 }
+
+function removeLastPoint() {
+    if (points.length > 3) {
+        const lastPoint = points.pop();
+        lastPoint.circle.remove();
+        
+        angleDisplays.pop().remove();
+
+        updatePath();
+    } else {
+        removeButton.style.color = "red";
+        removeButton.innerHTML = "No points to remove";
+
+    setTimeout(() => {
+        removeButton.style.color = "black";
+        removeButton.innerHTML = "Remove point";
+    }, "1000");
+    }
+}
+
 
 function createPoint(x, y) {
     const newPoint = {

@@ -73,6 +73,8 @@ a {
     cursor: pointer;
     text-decoration: none;
     color: black;
+    margin: 0px 4px;
+    transition: 0.166s;
 }
 
 .controller {
