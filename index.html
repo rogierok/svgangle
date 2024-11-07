@@ -50,8 +50,6 @@ const downloadButton = document.getElementById('downloadButton');
 const removeButton = document.getElementById('removeButton');
 const container = document.getElementById("container");
 
-document.title = "SVG with" + points.length + "points.";
-
 const angleDisplays = [
     document.getElementById('angle1'),
     document.getElementById('angle2'),
@@ -209,7 +207,6 @@ function updateURL() {
     const pointString = points.map(p => `${p.x},${p.y}`).join(',');
     const newURL = `${window.location.pathname}?points=${pointString}&snapping=${snappingEnabled}`;
     history.replaceState(null, '', newURL);
-    document.title = "SVG with" + points.length + "points.";
 }
 
 function loadPathFromURL() {
