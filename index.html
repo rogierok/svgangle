@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style.css">
     <meta name="keywords" content="JavaScript, SVG, Angle">
     <meta name="author" content="Rogier Goossen">
+    <meta name='subtitle' content="SVG with 3 points.">
     <meta name="description" content="This is a simple svg generator where you can also see the angles, you can add however many points you want to create your desired shape.">
 </head>
 <body>
@@ -87,7 +88,7 @@ function downloadSVG() {
         downloadButton.style.backgroundColor = "#2D2D2D";
         downloadButton.innerHTML = "Save SVG";
     }, "1000");
-    
+
     const svgContent = `
         <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
             <path d="${pathElement.getAttribute('d')}" stroke="black" fill="transparent"/>
@@ -207,6 +208,7 @@ function updateURL() {
     const pointString = points.map(p => `${p.x},${p.y}`).join(',');
     const newURL = `${window.location.pathname}?points=${pointString}&snapping=${snappingEnabled}`;
     history.replaceState(null, '', newURL);
+    document.querySelector('meta[name="subtitle"]').setAttribute("content", "SVG with" + points.length + "points.");
 }
 
 function loadPathFromURL() {
