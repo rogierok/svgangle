@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVGangle generator</title>
+    <title>SVG Angle Generator</title>
     <link rel="stylesheet" href="/style.css">
     <meta name="keywords" content="JavaScript, SVG, Angle">
     <meta name="author" content="Rogier Goossen">
@@ -36,7 +36,9 @@
         <p id="length3" class="length">0</p>
 
         <textarea type="text" id="pathDisplay" readonly></textarea>
-        <button id="copyButton" onclick="copyText()">Copy path</button>
+        <div class="controller">
+            <button id="copyButton" onclick="copyText()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
+        </div>
         <p class="helloworld">by Rogier Goossen</p>
     </div>
 
@@ -44,6 +46,7 @@
 const pathElement = document.getElementById('path');
 const pathDisplay = document.getElementById('pathDisplay');
 const copyButton = document.getElementById('copyButton');
+const downloadButton = document.getElementById('downloadButton');
 const removeButton = document.getElementById('removeButton');
 const container = document.getElementById("container");
 
@@ -76,6 +79,31 @@ function copyText() {
     }, "1000");
 }
 
+function downloadSVG() {
+    downloadButton.style.backgroundColor = "lightgreen";
+    downloadButton.innerHTML = "Saved!";
+
+    setTimeout(() => {
+        downloadButton.style.backgroundColor = "#2D2D2D";
+        downloadButton.innerHTML = "Save SVG";
+    }, "1000");
+    
+    const svgContent = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+            <path d="${pathElement.getAttribute('d')}" stroke="black" fill="transparent"/>
+        </svg>`;
+
+    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+
+    const button = document.createElement('a');
+    button.href = URL.createObjectURL(blob);
+    button.download = 'SVGangle' + points.length + 'points.svg';
+    
+    button.click();
+
+    URL.revokeObjectURL(link.href);
+}
+
 function reset() {
     window.location.href = "../";
 }
@@ -84,6 +112,7 @@ let snappingEnabled = false;
 
 function toggleSnapping() {
     snappingEnabled = document.getElementById("snappingCheckbox").checked;
+    updateURL();
     calculateAngles();
 }
 
@@ -176,13 +205,14 @@ function createLengthDisplay(x, y) {
 
 function updateURL() {
     const pointString = points.map(p => `${p.x},${p.y}`).join(',');
-    const newURL = `${window.location.pathname}?points=${pointString}`;
+    const newURL = `${window.location.pathname}?points=${pointString}&snapping=${snappingEnabled}`;
     history.replaceState(null, '', newURL);
 }
 
 function loadPathFromURL() {
     const params = new URLSearchParams(window.location.search);
     const pointsParam = params.get('points');
+    const snappingParam = params.get('snapping');
     
     if (pointsParam) {
         const coords = pointsParam.split(',').map(Number);
@@ -201,6 +231,12 @@ function loadPathFromURL() {
             }
         }
     }
+
+    if (snappingParam !== null) {
+        snappingEnabled = snappingParam === 'true';
+        document.getElementById("snappingCheckbox").checked = snappingEnabled;
+    }
+
     updatePath();
 }
 
@@ -232,11 +268,13 @@ function calculateAngles() {
         
         let angleDegrees = Math.acos(dotProduct / (magnitudeA * magnitudeB)) * (180 / Math.PI);
         
-        //fix issue that is making some angles that should be 20 display as 19.98 or something like that, issue for later
-
         angleDisplays[i].textContent = angleDegrees.toFixed(2) + "°";
         angleDisplays[i].style.left = `${P1.x + 10}px`;
         angleDisplays[i].style.top = `${P1.y - 20}px`;
+
+        if (isNaN(angleDegrees)) {
+            angleDisplays[i].textContent = "180.00°";
+        }
     });
 }
 
@@ -295,7 +333,6 @@ svgElement.addEventListener('mousemove', (e) => {
         }
     }
 });
-
 
 document.addEventListener('mouseup', () => {
     selectedPoint = null;

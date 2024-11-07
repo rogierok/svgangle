@@ -62,7 +62,7 @@ button {
     box-sizing: border-box;
     padding: 4px;
     margin-top: 5px;
-    width: 400px;
+    width: 197.5px;
     height: 25px;
     background-color: #2D2D2D;
     border-radius: 10px;
@@ -93,6 +93,7 @@ a {
 }
 
 input[type="checkbox"] {
+    cursor: pointer;
     appearance: none;
     height: 16px;
     width: 16px;
