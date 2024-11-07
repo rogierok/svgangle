@@ -68,7 +68,7 @@ const points = [
     { circle: document.getElementById('p3'), x: 100, y: 300 }
 ];
 
-document.title = "SVG with" + points.length + "points.";
+document.title = "SVG with " + points.length + " points.";
 
 function copyText() {
     navigator.clipboard.writeText(pathDisplay.value);
@@ -209,7 +209,7 @@ function updateURL() {
     const pointString = points.map(p => `${p.x},${p.y}`).join(',');
     const newURL = `${window.location.pathname}?points=${pointString}&snapping=${snappingEnabled}`;
     history.replaceState(null, '', newURL);
-    document.title = "SVG with" + points.length + "points.";
+    document.title = "SVG with " + points.length + " points.";
 }
 
 function loadPathFromURL() {
