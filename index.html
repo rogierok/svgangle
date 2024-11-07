@@ -22,6 +22,7 @@
             <div>
                 <a href="#" onclick="addNewPoint()">Add point</a>
                 <a href="#" onclick="removeLastPoint()" id="removeButton">Remove point</a>
+                <label><input type="checkbox" id="snappingCheckbox" onchange="toggleSnapping()">Snapping</label>
             </div>
             <a href="#" onclick="reset()">Reset</a>
         </div>
@@ -66,7 +67,7 @@ const points = [
 
 function copyText() {
     navigator.clipboard.writeText(pathDisplay.value);
-    copyButton.style.backgroundColor = "green";
+    copyButton.style.backgroundColor = "lightgreen";
     copyButton.innerHTML = "Copied!";
 
     setTimeout(() => {
@@ -77,6 +78,13 @@ function copyText() {
 
 function reset() {
     window.location.href = "../";
+}
+
+let snappingEnabled = false;
+
+function toggleSnapping() {
+    snappingEnabled = document.getElementById("snappingCheckbox").checked;
+    calculateAngles();
 }
 
 let pointCount = 3;
@@ -119,7 +127,7 @@ function removeLastPoint() {
 
         updatePath();
     } else {
-        removeButton.style.color = "red";
+        removeButton.style.color = "lightcoral";
         removeButton.innerHTML = "No points to remove";
 
         setTimeout(() => {
@@ -209,7 +217,7 @@ function calculateAngles() {
     points.forEach((P1, i) => {
         const P0 = points[(i - 1 + points.length) % points.length];
         const P2 = points[(i + 1) % points.length];
-        
+
         const vectorA = { x: P0.x - P1.x, y: P0.y - P1.y };
         const vectorB = { x: P2.x - P1.x, y: P2.y - P1.y };
         
@@ -222,15 +230,11 @@ function calculateAngles() {
             return;
         }
         
-        const angleRadians = Math.acos(dotProduct / (magnitudeA * magnitudeB));
-        const angleDegrees = angleRadians * (180 / Math.PI);
+        let angleDegrees = Math.acos(dotProduct / (magnitudeA * magnitudeB)) * (180 / Math.PI);
         
-        if (isNaN(angleDegrees)) {
-            angleDisplays[i].textContent = "180°";
-        } else {
-            angleDisplays[i].textContent = angleDegrees.toFixed(2) + "°";
-        }
-        
+        //fix issue that is making some angles that should be 20 display as 19.98 or something like that, issue for later
+
+        angleDisplays[i].textContent = angleDegrees.toFixed(2) + "°";
         angleDisplays[i].style.left = `${P1.x + 10}px`;
         angleDisplays[i].style.top = `${P1.y - 20}px`;
     });
@@ -273,8 +277,14 @@ const svgElement = document.querySelector('svg');
 
 svgElement.addEventListener('mousemove', (e) => {
     if (selectedPoint) {
-        const newX = e.offsetX;
-        const newY = e.offsetY;
+        let newX = e.offsetX;
+        let newY = e.offsetY;
+
+        if (snappingEnabled) {
+            const snapResolution = 10;
+            newX = Math.round(newX / snapResolution) * snapResolution;
+            newY = Math.round(newY / snapResolution) * snapResolution;
+        }
 
         if (newX >= 0 && newX <= 400 && newY >= 0 && newY <= 400) {
             selectedPoint.x = newX;
@@ -285,6 +295,7 @@ svgElement.addEventListener('mousemove', (e) => {
         }
     }
 });
+
 
 document.addEventListener('mouseup', () => {
     selectedPoint = null;
