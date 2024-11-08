@@ -6,9 +6,10 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(1.5);
+    transform: translate(-50%, -50%) scale(1.4);
     display: flex;
     flex-direction: column;
+    opacity: 1;
 }
 
 svg {
@@ -17,6 +18,7 @@ svg {
     height: 400px;
     background-color: #2D2D2D;
     border-radius: 10px;
+    opacity: 1;
 }
 
 .angle {
@@ -40,7 +42,8 @@ svg {
     transition: opacity 0.25s;
 }
 
-.container:hover > .angle, .container:hover > .length {
+.container:hover > .angle,
+.container:hover > .length {
     opacity: 66%;
 }
 
@@ -56,6 +59,7 @@ textarea {
     resize: none;
     font-family: 'Courier New', monospace;
     border: none;
+    opacity: 1;
 }
 
 button {
@@ -67,11 +71,10 @@ button {
     background-color: #2D2D2D;
     border-radius: 10px;
     color: white;
-
     border: none;
     cursor: pointer;
     transition: 0.33s;
-
+    opacity: 1;
 }
 
 button:active {
@@ -84,12 +87,14 @@ a {
     color: black;
     margin: 0px 4px;
     transition: 0.166s;
+    opacity: 1;
 }
 
 .controller {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    opacity: 1;
 }
 
 input[type="checkbox"] {
@@ -97,10 +102,12 @@ input[type="checkbox"] {
     appearance: none;
     height: 16px;
     width: 16px;
-    vertical-align:middle;
+    vertical-align: middle;
     border: 1px solid black;
     border-radius: 4px;
+    opacity: 1;
 }
+
 input[type="checkbox"]:checked {
     background-color: lightgreen;
 }
@@ -111,19 +118,29 @@ input[type="checkbox"]:checked {
 }
 
 .errortext {
-    display: none;
+    position: absolute;
+    z-index: 1;
     box-sizing: border-box;
-    opacity: 50%;
+    width: 80%;
+    left: 0; 
+    right: 0; 
+    margin-inline: auto; 
+    opacity: 0%;
     max-width: 400px;
-    content: var(--error-text);
     background-color: lightcoral;
     border-radius: 10px;
     padding: 8px;
 }
 
-@media only screen and (max-device-width:600px) {
+@media only screen and (max-device-width:1400px) {
+    .container {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@media only screen and (max-device-width:1024px) {
     .errortext {
-        display: block;
+        opacity: 100%;
     }
     .container {
         transform: translate(-50%, -50%) scale(0.8);
