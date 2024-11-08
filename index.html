@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG Angle Generator</title>
+    <title>SVG shape Generator</title>
     <link rel="stylesheet" href="/style.css">
     <meta name="keywords" content="SVG, Angle, Generator">
     <meta name="author" content="Rogier Goossen">
-    <meta name="description" content="This is a simple svg generator where you can also see the angles, you can add however many points you want to create your desired shape.">
+    <meta name="description" content="This is a simple svg shape generator where you can also see the angles, you can add however many points you want to create your desired shape.">
 </head>
 <body>
     <div class="container" id="container">
+        <p class="errortext" id="errorText"></p>
         <svg>
             <path id="path" d="M 200 100 L 300 300 L 100 300 Z" stroke="white" fill="transparent" />
             
@@ -37,7 +38,7 @@
 
         <textarea type="text" id="pathDisplay" readonly></textarea>
         <div class="controller">
-            <button id="copyButton" onclick="copyText()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
+            <button id="copyButton" onclick="copyPath()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
         </div>
         <p class="helloworld">by Rogier Goossen</p>
     </div>
@@ -49,6 +50,15 @@ const copyButton = document.getElementById('copyButton');
 const downloadButton = document.getElementById('downloadButton');
 const removeButton = document.getElementById('removeButton');
 const container = document.getElementById("container");
+const errorText = document.getElementById("errorText");
+
+const svgElement = document.querySelector('svg');
+
+errorText.innerHTML = "You are on mobile, and unfortunately dragging the points does not work on mobile just yet."
+
+let selectedPoint = null;
+let snappingEnabled = false;
+let pointCount = 3;
 
 const angleDisplays = [
     document.getElementById('angle1'),
@@ -70,7 +80,7 @@ const points = [
 
 document.title = "SVG with " + points.length + " points";
 
-function copyText() {
+function copyPath() {
     navigator.clipboard.writeText(pathDisplay.value);
     copyButton.style.backgroundColor = "lightgreen";
     copyButton.innerHTML = "Copied!";
@@ -110,15 +120,11 @@ function reset() {
     window.location.href = "../";
 }
 
-let snappingEnabled = false;
-
 function toggleSnapping() {
     snappingEnabled = document.getElementById("snappingCheckbox").checked;
     updateURL();
     calculateAngles();
 }
-
-let pointCount = 3;
 
 function addNewPoint() {
     const firstPoint = points[0];
@@ -143,10 +149,10 @@ function addPoint(x, y) {
     container.appendChild(lengthDisplay);
     angleDisplays.push(angleDisplay);
     lengthDisplays.push(lengthDisplay);
-    pointCount++;
 
     updatePath();
 }
+
 
 function removeLastPoint() {
     if (points.length > 3) {
@@ -204,6 +210,74 @@ function createLengthDisplay(x, y) {
 
     return lengthDisplay;
 }
+
+function initDragAndDrop() {
+    container.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+
+    container.addEventListener('drop', (event) => {
+        event.preventDefault();
+
+        const file = event.dataTransfer.files[0];
+        if (file && file.type === 'image/svg+xml') {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const svgText = e.target.result;
+                parseSVG(svgText);
+            };
+            reader.readAsText(file);
+        }
+    });
+}
+
+function parseSVG(svgText) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgText, 'image/svg+xml');
+    const pathElement = doc.querySelector('path');
+
+    if (pathElement) {
+        const pathData = pathElement.getAttribute('d');
+        if (pathData) {
+                updatePointsFromPath(pathData);
+                updatePath();
+        }
+    }
+}
+
+
+function updatePointsFromPath(pathData) {
+    points.forEach(point => point.circle.remove());
+    points.length = 0;
+
+    angleDisplays.forEach(display => display.remove());
+    lengthDisplays.forEach(display => display.remove());
+    
+    angleDisplays.length = 0;
+    lengthDisplays.length = 0;
+
+    const commands = pathData.match(/[a-df-z][^a-df-z]*/ig);
+
+    for (const command of commands) {
+        const type = command[0];
+        const coords = command.slice(1).trim().split(/[\s,]+/).map(Number);
+
+        if (['M', 'L'].includes(type)) {
+            addPoint(coords[0], coords[1]);
+        } else if (['C', 'S', 'Q', 'T', 'A'].includes(type)) {
+            errorText.style.display = "block";
+            errorText.innerHTML = "SVG shape generator does not accept svg's with curves, sorry!";
+            setTimeout(() => {
+                reset()
+            }, "2500");
+        }
+    }
+
+    updatePath();
+    updateURL();
+}
+
+document.addEventListener("DOMContentLoaded", initDragAndDrop);
 
 function updateURL() {
     const pointString = points.map(p => `${p.x},${p.y}`).join(',');
@@ -306,15 +380,11 @@ function calculateLengths() {
     }
 }
 
-let selectedPoint = null;
-
 points.forEach(point => {
     point.circle.addEventListener('mousedown', (e) => {
         selectedPoint = point;
     });
 });
-
-const svgElement = document.querySelector('svg');
 
 svgElement.addEventListener('mousemove', (e) => {
     if (selectedPoint) {
