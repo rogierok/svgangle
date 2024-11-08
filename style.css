@@ -6,7 +6,7 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1.5);
     display: flex;
     flex-direction: column;
 }
@@ -110,7 +110,7 @@ input[type="checkbox"]:checked {
     opacity: 10%;
 }
 
-@media only screen and (max-device-width:480px) {
+@media only screen and (max-device-width:600px) {
     .container::after {
         box-sizing: border-box;
         opacity: 50%;
@@ -118,5 +118,8 @@ input[type="checkbox"]:checked {
         border-radius: 10px;
         padding: 8px;
         content: "You are on mobile, and unfortunately dragging the points does not work on mobile just yet.";
+    }
+    .container {
+        transform: translate(-50%, -50%) scale(0.8);
     }
 }
