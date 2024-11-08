@@ -171,7 +171,19 @@ function addPoint(x, y, insertIndex) {
 
 
 function removeLastPoint() {
-    if (points.length > 3) {
+    if (selectedPoint && points.length > 3) {
+
+        selectedPoint.circle.remove();
+
+        angleDisplays[points.indexOf(selectedPoint)].remove();
+        lengthDisplays[points.indexOf(selectedPoint)].remove();
+
+        points.splice(points.indexOf(selectedPoint), 1);
+
+        selectedPoint = null;
+
+        updatePath();
+    } else if (points.length > 3) {
         const lastPoint = points.pop();
         lastPoint.circle.remove();
         
