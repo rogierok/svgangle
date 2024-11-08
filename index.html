@@ -21,7 +21,7 @@
         </svg>
         <div class="controller">
             <div>
-                <a href="#" onclick="addNewPoint()">Add point</a>
+                <a href="#" onclick="addNewPoint()" id="addButton">Add point</a>
                 <a href="#" onclick="removeLastPoint()" id="removeButton">Remove point</a>
                 <label><input type="checkbox" id="snappingCheckbox" onchange="toggleSnapping()">Snapping</label>
             </div>
@@ -48,6 +48,7 @@ const pathElement = document.getElementById('path');
 const pathDisplay = document.getElementById('pathDisplay');
 const copyButton = document.getElementById('copyButton');
 const downloadButton = document.getElementById('downloadButton');
+const addButton = document.getElementById('addButton');
 const removeButton = document.getElementById('removeButton');
 const container = document.getElementById("container");
 const errorText = document.getElementById("errorText");
@@ -56,6 +57,7 @@ const svgElement = document.querySelector('svg');
 
 errorText.innerHTML = "It looks like you are on a touchscreen device, unfortunately dragging the points does not work on touchscreens just yet."
 
+let heldPoint = null;
 let selectedPoint = null;
 let snappingEnabled = false;
 let pointCount = 3;
@@ -127,28 +129,42 @@ function toggleSnapping() {
 }
 
 function addNewPoint() {
-    const firstPoint = points[0];
-    const lastPoint = points[points.length - 1];
-    
-    const midX = (firstPoint.x + lastPoint.x) / 2;
-    const midY = (firstPoint.y + lastPoint.y) / 2;
-    
-    addPoint(midX, midY);
+    if (selectedPoint) {
+        const selectedIndex = points.indexOf(selectedPoint);
+
+        const nextPoint = points[(selectedIndex + 1) % points.length];
+        
+        const midX = (selectedPoint.x + nextPoint.x) / 2;
+        const midY = (selectedPoint.y + nextPoint.y) / 2;
+
+        addPoint(midX, midY, selectedIndex + 1);
+    }
+    else {
+        const firstPoint = points[0];
+        const lastPoint = points[points.length - 1];
+        
+        const midX = (firstPoint.x + lastPoint.x) / 2;
+        const midY = (firstPoint.y + lastPoint.y) / 2;
+        
+        addPoint(midX, midY, points.length);
+    }
 }
 
-function addPoint(x, y) {
+
+function addPoint(x, y, insertIndex) {
     const newPoint = createPoint(x, y);
     
+    points.splice(insertIndex, 0, newPoint);
+
     document.querySelector("svg").appendChild(newPoint.circle);
-    points.push(newPoint);
 
     const angleDisplay = createAngleDisplay(x, y);
     const lengthDisplay = createLengthDisplay(x, y);
-
     container.appendChild(angleDisplay);
     container.appendChild(lengthDisplay);
-    angleDisplays.push(angleDisplay);
-    lengthDisplays.push(lengthDisplay);
+
+    angleDisplays.splice(insertIndex, 0, angleDisplay);
+    lengthDisplays.splice(insertIndex, 0, lengthDisplay);
 
     updatePath();
 }
@@ -294,18 +310,19 @@ function loadPathFromURL() {
     if (pointsParam) {
         const coords = pointsParam.split(',').map(Number);
 
+        points.forEach(point => point.circle.remove());
+        points.length = 0;
+
+        angleDisplays.forEach(display => display.remove());
+        lengthDisplays.forEach(display => display.remove());
+
+        angleDisplays.length = 0;
+        lengthDisplays.length = 0;
+
         for (let i = 0; i < coords.length / 2; i++) {
             const newX = coords[i * 2];
             const newY = coords[i * 2 + 1];
-            
-            if (i < points.length) {
-                points[i].x = newX;
-                points[i].y = newY;
-                points[i].circle.setAttribute('cx', newX);
-                points[i].circle.setAttribute('cy', newY);
-            } else {
-                addPoint(newX, newY);
-            }
+            addPoint(newX, newY, points.length);
         }
     }
 
@@ -317,10 +334,27 @@ function loadPathFromURL() {
     updatePath();
 }
 
+
 function updatePath() {
     const d = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ') + " Z";
     pathElement.setAttribute('d', d);
     pathDisplay.value = d.replace(/\s+/g, ' ').trim();
+
+    points.forEach(point => {
+    point.circle.addEventListener('mousedown', (e) => {
+        points.forEach(p => p.circle.setAttribute('fill', 'grey'));
+        
+        selectedPoint = point;
+        heldPoint = point;
+        selectedPoint.circle.setAttribute('fill', 'lightgreen');
+
+        addButton.style.color = "lightgreen"
+        
+        e.preventDefault();
+    });
+});
+
+
     calculateAngles();
     calculateLengths();
     updateURL();
@@ -380,14 +414,8 @@ function calculateLengths() {
     }
 }
 
-points.forEach(point => {
-    point.circle.addEventListener('mousedown', (e) => {
-        selectedPoint = point;
-    });
-});
-
 svgElement.addEventListener('mousemove', (e) => {
-    if (selectedPoint) {
+    if (heldPoint) {
         let newX = e.offsetX;
         let newY = e.offsetY;
 
@@ -398,17 +426,28 @@ svgElement.addEventListener('mousemove', (e) => {
         }
 
         if (newX >= 0 && newX <= 400 && newY >= 0 && newY <= 400) {
-            selectedPoint.x = newX;
-            selectedPoint.y = newY;
-            selectedPoint.circle.setAttribute('cx', selectedPoint.x);
-            selectedPoint.circle.setAttribute('cy', selectedPoint.y);
+            heldPoint.x = newX;
+            heldPoint.y = newY;
+            heldPoint.circle.setAttribute('cx', heldPoint.x);
+            heldPoint.circle.setAttribute('cy', heldPoint.y);
             updatePath();
         }
     }
 });
 
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('circle')) {
+        if (selectedPoint) {
+            selectedPoint.circle.setAttribute('fill', 'grey');
+            selectedPoint = null;
+            
+            addButton.style.color = "black"
+        }
+    }
+});
+
 document.addEventListener('mouseup', () => {
-    selectedPoint = null;
+    heldPoint = null;
 });
 
 loadPathFromURL();
