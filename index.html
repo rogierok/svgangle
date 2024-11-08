@@ -220,13 +220,17 @@ function addPoint(x, y, insertIndex) {
 
 function removeLastPoint() {
     if (selectedPoint && points.length > 3) {
+        const indexToRemove = points.indexOf(selectedPoint);
 
         selectedPoint.circle.remove();
 
-        angleDisplays[points.indexOf(selectedPoint)].remove();
-        lengthDisplays[points.indexOf(selectedPoint)].remove();
+        angleDisplays[indexToRemove].remove();
+        lengthDisplays[indexToRemove].remove();
 
-        points.splice(points.indexOf(selectedPoint), 1);
+        points.splice(indexToRemove, 1);
+
+        angleDisplays.splice(indexToRemove, 1);
+        lengthDisplays.splice(indexToRemove, 1);
 
         selectedPoint = null;
 
@@ -234,7 +238,7 @@ function removeLastPoint() {
     } else if (points.length > 3) {
         const lastPoint = points.pop();
         lastPoint.circle.remove();
-        
+
         angleDisplays.pop().remove();
         lengthDisplays.pop().remove();
 
@@ -246,9 +250,10 @@ function removeLastPoint() {
         setTimeout(() => {
             removeButton.style.color = "black";
             removeButton.innerHTML = "Remove point";
-        }, "1000");
+        }, 1000);
     }
 }
+
 
 function createPoint(x, y) {
     const newPoint = {
