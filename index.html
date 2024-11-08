@@ -119,8 +119,56 @@ function downloadSVG() {
 }
 
 function reset() {
-    window.location.href = "../";
+    points.forEach(point => point.circle.remove());
+    points.length = 0;
+    
+    angleDisplays.forEach(display => display.remove());
+    lengthDisplays.forEach(display => display.remove());
+    
+    angleDisplays.length = 0;
+    lengthDisplays.length = 0;
+
+    points.push(
+        { circle: createPoint(200, 100).circle, x: 200, y: 100 },
+        { circle: createPoint(300, 300).circle, x: 300, y: 300 },
+        { circle: createPoint(100, 300).circle, x: 100, y: 300 }
+    );
+
+    points.forEach(point => document.querySelector("svg").appendChild(point.circle));
+
+    angleDisplays.push(
+        createAngleDisplay(200, 100),
+        createAngleDisplay(300, 300),
+        createAngleDisplay(100, 300)
+    );
+
+    lengthDisplays.push(
+        createLengthDisplay(200, 100),
+        createLengthDisplay(300, 300),
+        createLengthDisplay(100, 300)
+    );
+
+    angleDisplays.forEach(display => container.appendChild(display));
+    lengthDisplays.forEach(display => container.appendChild(display));
+
+    points.forEach((point, i) => {
+        point.circle.addEventListener('mousedown', (e) => {
+            points.forEach(p => p.circle.setAttribute('fill', 'grey'));
+
+            selectedPoint = point;
+            heldPoint = point;
+            selectedPoint.circle.setAttribute('fill', 'lightgreen');
+
+            addButton.style.color = "lightgreen";
+
+            e.preventDefault();
+        });
+    });
+
+    updatePath();
+    updateURL();
 }
+
 
 function toggleSnapping() {
     snappingEnabled = document.getElementById("snappingCheckbox").checked;
