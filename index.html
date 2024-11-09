@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG shape Generator</title>
+
+    <title>SVG shape generator</title>
+    <meta name="title" content="SVG shape generator" />
+    <meta name="description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://svgangle.com/" />
+    <meta property="og:title" content="SVG shape generator" />
+    <meta property="og:description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://svgangle.com/" />
+    <meta property="twitter:title" content="SVG shape generator" />
+    <meta property="twitter:description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+
     <link rel="stylesheet" href="/style.css">
     <meta name="keywords" content="SVG, Angle, Generator">
     <meta name="author" content="Rogier Goossen">
-    <meta name="description" content="This is a simple svg shape generator where you can also see the angles, you can add however many points you want to create your desired shape.">
 </head>
 <body>
     <p class="errortext" id="errorText"></p>
@@ -40,7 +53,7 @@
         <div class="controller">
             <button id="copyButton" onclick="copyPath()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
         </div>
-        <p class="helloworld">by Rogier Goossen</p>
+        <h1 class="helloworld">SVG shape generator by Rogier Goossen</h1>
     </div>
 
 <script>
@@ -61,6 +74,7 @@ let heldPoint = null;
 let selectedPoint = null;
 let snappingEnabled = false;
 let pointCount = 3;
+let errorCooldown = 3000;
 
 const angleDisplays = [
     document.getElementById('angle1'),
@@ -80,8 +94,6 @@ const points = [
     { circle: document.getElementById('p3'), x: 100, y: 300 }
 ];
 
-document.title = "SVG with " + points.length + " points";
-
 function copyPath() {
     navigator.clipboard.writeText(pathDisplay.value);
     copyButton.style.backgroundColor = "lightgreen";
@@ -90,7 +102,7 @@ function copyPath() {
     setTimeout(() => {
         copyButton.style.backgroundColor = "#2D2D2D";
         copyButton.innerHTML = "Copy path";
-    }, "1000");
+    }, errorCooldown / 2);
 }
 
 function downloadSVG() {
@@ -100,7 +112,7 @@ function downloadSVG() {
     setTimeout(() => {
         downloadButton.style.backgroundColor = "#2D2D2D";
         downloadButton.innerHTML = "Save SVG";
-    }, "1000");
+    }, errorCooldown / 2);
 
     const svgContent = `
         <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
@@ -244,13 +256,14 @@ function removeLastPoint() {
 
         updatePath();
     } else {
-        removeButton.style.color = "lightcoral";
-        removeButton.innerHTML = "No points to remove";
-
-        setTimeout(() => {
-            removeButton.style.color = "black";
-            removeButton.innerHTML = "Remove point";
-        }, 1000);
+            removeButton.style.color = "lightcoral";
+            errorText.style.opacity = "100%";
+            errorText.innerHTML = "You cannot remove any more points, you need a minimum of 3 points to create a shape.";
+            setTimeout(() => {
+                removeButton.style.color = "black";
+                errorText.style.opacity = "0%";
+                errorText.innerHTML = "";
+            }, errorCooldown);
     }
 }
 
@@ -309,6 +322,14 @@ function initDragAndDrop() {
             };
             reader.readAsText(file);
         }
+        else {
+            errorText.style.opacity = "100%";
+            errorText.innerHTML = "The file you are trying to import '" + file.name + "' is not an SVG file, please try a different file instead!";
+            setTimeout(() => {
+                errorText.style.opacity = "0%";
+                errorText.innerHTML = "";
+            }, errorCooldown);
+        }
     });
 }
 
@@ -326,7 +347,6 @@ function parseSVG(svgText) {
     }
 }
 
-
 function updatePointsFromPath(pathData) {
     points.forEach(point => point.circle.remove());
     points.length = 0;
@@ -343,14 +363,16 @@ function updatePointsFromPath(pathData) {
         const type = command[0];
         const coords = command.slice(1).trim().split(/[\s,]+/).map(Number);
 
-        if (['M', 'L'].includes(type)) {
+        if (['M', 'L', 'm', 'l'].includes(type)) {
             addPoint(coords[0], coords[1]);
-        } else if (['C', 'S', 'Q', 'T', 'A'].includes(type)) {
+        } else if (['C', 'S', 'Q', 'T', 'A', 'c', 's', 'q', 't', 'a'].includes(type)) {
             errorText.style.opacity = "100%";
-            errorText.innerHTML = "It looks like you are trying to import an SVG document with curves, this doesn't work just yet.";
+            errorText.innerHTML = "It looks like you are trying to import an SVG file with curves or other SVG properties we don't yet accept. Try again later, sorry!";
             setTimeout(() => {
+                errorText.style.opacity = "0%";
+                errorText.innerHTML = "";
                 reset()
-            }, "2500");
+            }, errorCooldown);
         }
     }
 
@@ -418,7 +440,6 @@ function updatePath() {
         e.preventDefault();
     });
 });
-
 
     calculateAngles();
     calculateLengths();
