@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SVG Shape Generator | Create Custom SVG Shapes</title>
-    <meta name="title" content="SVG shape generator" />
-    <meta name="description" content="Create custom SVG shapes with adjustable angles. You can add, move, and adjust points to see angles and lengths dynamically." />
+    <title>SVG Shape Generator | Create Custom SVG Polygons</title>
+    <meta name="title" content="SVG Shape Generator | Create Custom SVG Polygons" />
+    <meta name="description" content="A simple SVG shape / polygon generator where you can also see the angles, you can add however many points you want to create your desired shape." />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://svgangle.com/" />
-    <meta property="og:title" content="SVG shape generator" />
-    <meta property="og:description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+    <meta property="og:title" content="SVG Shape Generator | Create Custom SVG Polygons" />
+    <meta property="og:description" content="A simple SVG shape / polygon generator where you can also see the angles, you can add however many points you want to create your desired shape." />
 
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://svgangle.com/" />
-    <meta property="twitter:title" content="SVG shape generator" />
-    <meta property="twitter:description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+    <meta property="twitter:title" content="SVG Shape Generator | Create Custom SVG Polygons" />
+    <meta property="twitter:description" content="A simple SVG shape / polygon generator where you can also see the angles, you can add however many points you want to create your desired shape." />
 
     <link rel="stylesheet" href="/style.css">
     <meta name="keywords" content="SVG, Angle, Generator">
@@ -27,7 +27,7 @@
     <div class="infocard" id="infoCard">
         <div>
             <h2>Info</h2>
-            <p>SVGangle.com is a free tool that lets you create your own SVG shapes, perfect for developers. It’s easy to use and helps you visualize angles and lengths, making it ideal for creating precise shapes.</p>
+            <p>SVGangle.com is a free tool that lets you create your own SVG shapes / polygons, perfect for developers. It’s easy to use and helps you visualize angles and lengths, making it ideal for creating precise shapes.</p>
             <h2>How to use?</h2>
             <h3>Selecting a point</h3>
             <p>Click on a <code>circle</code> to select a point. The <code>circle</code> will turn green to show that it is selected.</p>
@@ -47,7 +47,7 @@
             <a aria-label="Close info" href="#" onclick="hideInfo()">x</a>
     </div>
     <div class="container" id="container">
-        <svg aria-label="SVG shape" role="img">
+        <svg aria-label="SVG shape polygon" role="img">
             <path id="path" d="M 200 100 L 300 300 L 100 300 Z" stroke="white" fill="transparent" />
             
             <circle id="p1" cx="200" cy="100" r="4" fill="grey" cursor="pointer" />
@@ -76,7 +76,7 @@
             <button id="copyButton" onclick="copyPath()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
         </div>
         <div class="helloworld">
-            <h1>SVG shape generator</h1><p>by Rogier Goossen</p><a aria-label="Open info" onclick="showInfo()">Info</a>
+            <h1>Shape / polygon generator</h1><p>by Rogier Goossen</p><a aria-label="Open info" href="#" onclick="showInfo()">Info</a>
         </div>
     </div>
 
