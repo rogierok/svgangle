@@ -6,7 +6,7 @@
 
     <title>SVG shape generator</title>
     <meta name="title" content="SVG shape generator" />
-    <meta name="description" content="A simple SVG shape generator where you can also see the angles, you can add however many points you want to create your desired shape." />
+    <meta name="description" content="Create custom SVG shapes with adjustable angles. You can add, move, and adjust points to see angles and lengths dynamically." />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://svgangle.com/" />
@@ -24,8 +24,30 @@
 </head>
 <body>
     <p class="errortext" id="errorText"></p>
+    <div class="infocard" id="infoCard">
+        <div>
+            <h2>Info</h2>
+            <p>SVGangle.com is a free tool that lets you create your own SVG shapes, perfect for developers. It’s easy to use and helps you visualize angles and lengths, making it ideal for creating precise shapes.</p>
+            <h2>How to use?</h2>
+            <h3>Selecting a point</h3>
+            <p>Click on a <code>circle</code> to select a point. The <code>circle</code> will turn green to show that it is selected.</p>
+            <h3>Creating a point</h3>
+            <p>Select a point you want a new point connected to. Then click the <code>Add point</code> button to add a point to the selected point. If no point is selected, the point will be created between the first and last points by default.</p>
+            <h3>Removing a point</h3>
+            <p>Select the point you want to remove. Then click the <code>Remove point</code> button to delete the selected point. If no point is selected, the point between the first and last point will be removed by default.</p>
+            <h3>Moving a point</h3>
+            <p>Drag the circle in any direction within the <code>SVG box</code>. If you want more precise control, enable the 'Snapping' feature by checking the <code>Snapping</code> checkbox. This will let you move points in 10px increments for easier alignment.</p>
+            <p><i>Note: If you're on a touchscreen device, dragging points is not supported yet.</i></p>
+            <h3>Drag and drop</h3>
+            <p>You can drag and drop an SVG file into the <code>SVG box</code> and it will render, ensure the width and height of the SVG file are within a reasonable size for the <code>SVG box</code>, as overly large SVG may not display properly. Also, SVGangle.com does not yet work with curves or any other SVG element that is not just a straight line, this is still being worked on.</p>
+            <h3>Sharing and downloading</h3>
+            <p>You can share the SVG by copying the link; your creation is stored in the URL, you can download the SVG as an SVG file as well by clicking on the <code>Save SVG</code> button, this will download a file containing your SVG, you can also copy the path using the <code>Copy path</code> button, this will just copy the path to your clipboard.</p>
+            <p>SVGangle.com is still under development.</p>
+        </div>
+            <a aria-label="Close info" href="#" onclick="hideInfo()">x</a>
+    </div>
     <div class="container" id="container">
-        <svg>
+        <svg aria-label="SVG shape" role="img">
             <path id="path" d="M 200 100 L 300 300 L 100 300 Z" stroke="white" fill="transparent" />
             
             <circle id="p1" cx="200" cy="100" r="4" fill="grey" cursor="pointer" />
@@ -34,11 +56,11 @@
         </svg>
         <div class="controller">
             <div>
-                <a href="#" onclick="addNewPoint()" id="addButton">Add point</a>
-                <a href="#" onclick="removeLastPoint()" id="removeButton">Remove point</a>
+                <a href="#" aria-label="Add point" onclick="addNewPoint()" id="addButton">Add point</a>
+                <a href="#" aria-label="Remove point" onclick="removeLastPoint()" id="removeButton">Remove point</a>
                 <label><input type="checkbox" id="snappingCheckbox" onchange="toggleSnapping()">Snapping</label>
             </div>
-            <a href="#" onclick="reset()">Reset</a>
+            <a href="#" aria-label="Reset" onclick="reset()">Reset</a>
         </div>
 
         <p id="angle1" class="angle">0°</p>
@@ -54,7 +76,7 @@
             <button id="copyButton" onclick="copyPath()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
         </div>
         <div class="helloworld">
-            <h1>SVG shape generator</h1><p>by Rogier Goossen</p>
+            <h1>SVG shape generator</h1><p>by Rogier Goossen</p><a aria-label="Open info" onclick="showInfo()">Info</a>
         </div>
     </div>
 
@@ -67,6 +89,7 @@ const addButton = document.getElementById('addButton');
 const removeButton = document.getElementById('removeButton');
 const container = document.getElementById("container");
 const errorText = document.getElementById("errorText");
+const infoCard = document.getElementById("infoCard");
 
 const svgElement = document.querySelector('svg');
 
@@ -95,6 +118,18 @@ const points = [
     { circle: document.getElementById('p2'), x: 300, y: 300 },
     { circle: document.getElementById('p3'), x: 100, y: 300 }
 ];
+
+function showInfo() {
+    infoCard.style.display = "flex";
+    infoCard.style.pointerEvents = "all"
+    document.body.classList.add('blur-active');
+}
+
+function hideInfo() {
+    infoCard.style.display = "none";
+    infoCard.style.pointerEvents = "none"
+    document.body.classList.remove('blur-active');
+}
 
 function copyPath() {
     navigator.clipboard.writeText(pathDisplay.value);

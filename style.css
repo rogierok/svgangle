@@ -6,6 +6,14 @@ body {
     font-size: 16px;
 }
 
+h2 {
+    font-size: 24px;
+}
+
+h3 { 
+    font-size: 20px;
+}
+
 .container {
     position: absolute;
     top: 50%;
@@ -81,6 +89,84 @@ button {
     opacity: 1;
 }
 
+body:not(.blur-active) *:not(.infocard):not(.infocard > *) {
+    filter: none;
+}
+
+body.blur-active *:not(.infocard):not(.infocard > *):not(.infocard > * > *):not(.infocard > * > * > *) {
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: blur(2px);
+}
+
+.infocard {
+    position: absolute;
+    box-sizing: border-box;
+    display: none;
+    justify-content: space-between;
+    padding: 12px;
+    padding-top: 0px;
+    width: 80%;
+    max-width: 350px;
+    max-height: 500px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    background-color: white;
+    border: solid 2px lightgray;
+    border-radius: 10px;
+    transform: translate(-50%, -50%);
+    --sb-track-color: white;
+    --sb-thumb-color: lightgreen;
+    --sb-size: 8px;
+
+}
+.infocard > a {
+    font-size: 24px;
+    z-index: 6;
+    position: sticky;
+    top: 0;
+    right: 0;
+    color: lightcoral
+}
+
+.infocard p:last-of-type {
+    opacity: 10%;
+}
+  
+  .infocard::-webkit-scrollbar {
+    width: var(--sb-size);
+  }
+  
+  .infocard::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: 4px;
+  }
+  
+  .infocard::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  @supports not selector(::-webkit-scrollbar) {
+    .infocard {
+        scrollbar-color: var(--sb-thumb-color)
+        var(--sb-track-color);
+    }
+  }
+
+code {
+    box-sizing: border-box;
+    padding: 2px;
+    background-color: lightgrey;
+    border-radius: 4px;
+}
+
 button:active {
     opacity: 75%;
 }
@@ -119,15 +205,17 @@ input[type="checkbox"]:checked {
 .helloworld {
     color: black;
     display: flex;
-    opacity: 10%;
     align-items: baseline;
     justify-content: space-between;
+}
+.helloworld h1, .helloworld p {
+    opacity: 25%;
 }
 
 .errortext {
     position: absolute;
     pointer-events: none;
-    z-index: 2;
+    z-index: 10;
     box-sizing: border-box;
     width: 80%;
     left: 0; 
