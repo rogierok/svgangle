@@ -53,7 +53,9 @@
         <div class="controller">
             <button id="copyButton" onclick="copyPath()">Copy path</button><button id="downloadButton" onclick="downloadSVG()">Save SVG</button>
         </div>
-        <h1 class="helloworld">SVG shape generator by Rogier Goossen</h1>
+        <div class="helloworld">
+            <h1>SVG shape generator</h1><p>by Rogier Goossen</p>
+        </div>
     </div>
 
 <script>
@@ -181,7 +183,6 @@ function reset() {
     updateURL();
 }
 
-
 function toggleSnapping() {
     snappingEnabled = document.getElementById("snappingCheckbox").checked;
     updateURL();
@@ -210,7 +211,6 @@ function addNewPoint() {
     }
 }
 
-
 function addPoint(x, y, insertIndex) {
     const newPoint = createPoint(x, y);
     
@@ -228,7 +228,6 @@ function addPoint(x, y, insertIndex) {
 
     updatePath();
 }
-
 
 function removeLastPoint() {
     if (selectedPoint && points.length > 3) {
@@ -266,7 +265,6 @@ function removeLastPoint() {
             }, errorCooldown);
     }
 }
-
 
 function createPoint(x, y) {
     const newPoint = {
@@ -420,7 +418,6 @@ function loadPathFromURL() {
 
     updatePath();
 }
-
 
 function updatePath() {
     const d = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ') + " Z";

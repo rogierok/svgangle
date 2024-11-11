@@ -118,12 +118,16 @@ input[type="checkbox"]:checked {
 
 .helloworld {
     color: black;
+    display: flex;
     opacity: 10%;
+    align-items: baseline;
+    justify-content: space-between;
 }
 
 .errortext {
     position: absolute;
-    z-index: 1;
+    pointer-events: none;
+    z-index: 2;
     box-sizing: border-box;
     width: 80%;
     left: 0; 
