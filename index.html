@@ -37,7 +37,7 @@
             <p>Select the point you want to remove. Then click the <code>Remove point</code> button to delete the selected point. If no point is selected, the point between the first and last point will be removed by default.</p>
             <h3>Moving a point</h3>
             <p>Drag the circle in any direction within the <code>SVG box</code>. If you want more precise control, enable the 'Snapping' feature by checking the <code>Snapping</code> checkbox. This will let you move points in 10px increments for easier alignment.</p>
-            <p><i>Note: If you're on a touchscreen device; dragging points might not work as smooth.</i></p>
+            <p><i>Note: If you're on a touchscreen device, dragging points might be a bit buggy.</i></p>
             <h3>Drag and drop</h3>
             <p>You can drag and drop an SVG file into the <code>SVG box</code> and it will render, ensure the width and height of the SVG file are within a reasonable size for the <code>SVG box</code>, as overly large SVG may not display properly. Also, SVGangle.com does not yet work with curves or any other SVG element that is not just a straight line, this is still being worked on.</p>
             <h3>Sharing and downloading</h3>
@@ -92,6 +92,8 @@ const errorText = document.getElementById("errorText");
 const infoCard = document.getElementById("infoCard");
 
 const svgElement = document.querySelector('svg');
+
+errorText.innerHTML = "It looks like you are on a touchscreen device, unfortunately dragging the points does not work on touchscreens just yet."
 
 let isTouchDevice = false;
 let heldPoint = null;
@@ -574,7 +576,7 @@ function handleMouseUp() {
 }
 
 function handleTouchStart(e) {
-    isTouchDevice = true;
+    isTouchDevice = true; // Set the flag to indicate touch device
 
     const touch = e.touches[0];
     const touchX = touch.clientX - svgElement.getBoundingClientRect().left;
@@ -608,14 +610,14 @@ function movePoint(x, y) {
         x = Math.round(x / snapResolution) * snapResolution;
         y = Math.round(y / snapResolution) * snapResolution;
     }
-    x = Math.max(0, Math.min(400, x));
-    y = Math.max(0, Math.min(400, y));
 
-    Object.assign(heldPoint, { x, y });
-    heldPoint.circle.setAttribute('cx', x);
-    heldPoint.circle.setAttribute('cy', y);
-
-    updatePath();
+    if (x >= 0 && x <= 400 && y >= 0 && y <= 400) {
+        heldPoint.x = x;
+        heldPoint.y = y;
+        heldPoint.circle.setAttribute('cx', x);
+        heldPoint.circle.setAttribute('cy', y);
+        updatePath();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
