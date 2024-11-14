@@ -235,12 +235,6 @@ input[type="checkbox"]:checked {
 }
 
 @media only screen and (max-device-width:1024px) {
-    .errortext {
-        opacity: 100%;
-    }
-    .logo {
-        display: none;
-    }
     .container {
         transform: translate(-50%, -50%) scale(0.8);
     }

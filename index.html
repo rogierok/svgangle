@@ -37,7 +37,7 @@
             <p>Select the point you want to remove. Then click the <code>Remove point</code> button to delete the selected point. If no point is selected, the point between the first and last point will be removed by default.</p>
             <h3>Moving a point</h3>
             <p>Drag the circle in any direction within the <code>SVG box</code>. If you want more precise control, enable the 'Snapping' feature by checking the <code>Snapping</code> checkbox. This will let you move points in 10px increments for easier alignment.</p>
-            <p><i>Note: If you're on a touchscreen device, dragging points is not supported yet.</i></p>
+            <p><i>Note: If you're on a touchscreen device; dragging points might not work as smooth.</i></p>
             <h3>Drag and drop</h3>
             <p>You can drag and drop an SVG file into the <code>SVG box</code> and it will render, ensure the width and height of the SVG file are within a reasonable size for the <code>SVG box</code>, as overly large SVG may not display properly. Also, SVGangle.com does not yet work with curves or any other SVG element that is not just a straight line, this is still being worked on.</p>
             <h3>Sharing and downloading</h3>
@@ -93,8 +93,7 @@ const infoCard = document.getElementById("infoCard");
 
 const svgElement = document.querySelector('svg');
 
-errorText.innerHTML = "It looks like you are on a touchscreen device, unfortunately dragging the points does not work on touchscreens just yet."
-
+let isTouchDevice = false;
 let heldPoint = null;
 let selectedPoint = null;
 let snappingEnabled = false;
@@ -118,6 +117,16 @@ const points = [
     { circle: document.getElementById('p2'), x: 300, y: 300 },
     { circle: document.getElementById('p3'), x: 100, y: 300 }
 ];
+
+function selectPoint(point) {
+    points.forEach(p => p.circle.setAttribute('fill', 'grey'));
+
+    selectedPoint = point;
+    heldPoint = point;
+    selectedPoint.circle.setAttribute('fill', 'lightgreen');
+
+    addButton.style.color = "lightgreen";
+}
 
 function showInfo() {
     infoCard.style.display = "flex";
@@ -531,6 +540,87 @@ function calculateLengths() {
         lengthDisplays[i].style.transform = `rotate(${angle}deg)`;
     }
 }
+
+function initTouchAndMouseEvents() {
+    svgElement.addEventListener('mousedown', handleMouseDown);
+    svgElement.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    svgElement.addEventListener('touchstart', handleTouchStart);
+    svgElement.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+}
+
+function handleMouseDown(e) {
+    if (!isTouchDevice) {
+        const point = points.find(p => p.circle === e.target);
+        if (point) {
+            selectPoint(point);
+            e.preventDefault();
+        }
+    }
+}
+
+function handleMouseMove(e) {
+    if (!isTouchDevice && heldPoint) {
+        movePoint(e.offsetX, e.offsetY);
+    }
+}
+
+function handleMouseUp() {
+    if (!isTouchDevice) {
+        heldPoint = null;
+    }
+}
+
+function handleTouchStart(e) {
+    isTouchDevice = true;
+
+    const touch = e.touches[0];
+    const touchX = touch.clientX - svgElement.getBoundingClientRect().left;
+    const touchY = touch.clientY - svgElement.getBoundingClientRect().top;
+
+    const point = points.find(p => p.circle === document.elementFromPoint(touch.clientX, touch.clientY));
+    if (point) {
+        selectPoint(point);
+        e.preventDefault();
+    }
+}
+
+function handleTouchMove(e) {
+    if (heldPoint) {
+        const touch = e.touches[0];
+        const touchX = touch.clientX - svgElement.getBoundingClientRect().left;
+        const touchY = touch.clientY - svgElement.getBoundingClientRect().top;
+
+        movePoint(touchX, touchY);
+        e.preventDefault();
+    }
+}
+
+function handleTouchEnd() {
+    heldPoint = null;
+}
+
+function movePoint(x, y) {
+    if (snappingEnabled) {
+        const snapResolution = 10;
+        x = Math.round(x / snapResolution) * snapResolution;
+        y = Math.round(y / snapResolution) * snapResolution;
+    }
+    x = Math.max(0, Math.min(400, x));
+    y = Math.max(0, Math.min(400, y));
+
+    Object.assign(heldPoint, { x, y });
+    heldPoint.circle.setAttribute('cx', x);
+    heldPoint.circle.setAttribute('cy', y);
+
+    updatePath();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initTouchAndMouseEvents();
+});
 
 svgElement.addEventListener('mousemove', (e) => {
     if (heldPoint) {
